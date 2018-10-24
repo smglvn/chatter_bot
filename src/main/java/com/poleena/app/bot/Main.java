@@ -11,8 +11,14 @@ public class Main {
 
     public static void main(String[] args) {
         boolean exit = false;
+        boolean start = true;
+        Scanner input = new Scanner(System.in);
+
         while (!exit) {
-            Scanner input = new Scanner(System.in);
+            if (start) {
+                start = false;
+                System.out.println(ChatBot.bot.startDialog);
+            }
             String strInput = input.nextLine().toLowerCase();
             exit = chatBot.inputHandler(strInput);
         }

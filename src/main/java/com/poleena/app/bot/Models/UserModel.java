@@ -4,4 +4,5 @@ import java.util.ArrayList;
 
 public class UserModel {
     public ArrayList<String> greetings;
+    public ArrayList<String> answers;
 }
