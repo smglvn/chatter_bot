@@ -6,6 +6,7 @@ public class BotModel {
     public ArrayList<String> greetings;
     public ArrayList<String> tests;
     public TestModel tempTest;
+    public TestModel petsTest;
     public String description;
     public String unknownCommand;
     public String startDialog;

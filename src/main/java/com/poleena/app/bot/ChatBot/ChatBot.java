@@ -124,7 +124,7 @@ public class ChatBot {
         if (bot.tests.get(index).equals("tempTest")) {
             return bot.tempTest;
         } else {
-            return null;
+            return bot.petsTest;
         }
     }
 }
