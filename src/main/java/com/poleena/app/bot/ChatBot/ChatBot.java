@@ -62,7 +62,7 @@ public class ChatBot {
                     }
                 }
                 String res = findFrequentAns(answers);
-                System.out.println(bot.tempTest.results.get(res));
+                System.out.println(test.results.get(res));
 
                 return false;
             }
