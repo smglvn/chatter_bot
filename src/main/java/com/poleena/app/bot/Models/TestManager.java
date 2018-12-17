@@ -1,51 +1,38 @@
 package com.poleena.app.bot.Models;
 
-import com.poleena.app.bot.FSM.FSMBot;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class TestManager {
     private Map<String, TestModel> tests;
-    private String unknownTestAnswer;
+    private String unknownTest;
     private TestModel chosenTest;
-    private FSMBot fsmBot;
     private Map<String, String> testsNamesMap = new HashMap<>();
 
-    public String testsString = "";
+    public String testsList = "";
 
     public void init() {
         int i = 1;
         StringBuilder sb = new StringBuilder();
-        sb.append("Напишите мне цифру теста, который хотите пройти\n");
-        for (String key : tests.keySet())
-        {
+        for (String key : tests.keySet()) {
             sb.append(i).append(": ").append(key).append("\n");
             testsNamesMap.put(Integer.toString(i), key);
             i++;
         }
 
-        tests.values().forEach(test -> test.setTestManager(this));
-        testsString = sb.toString();
+        testsList = sb.toString();
     }
 
-    public void setFsmBot(FSMBot fsmBot) {
-        this.fsmBot = fsmBot;
-    }
-
-    void completeTest() {
-        fsmBot.process("finish");
-    }
-
-    public String chooseTest(String test) {
+    public Response chooseTest(String test) {
         String testName = testsNamesMap.get(test);
         if (testName != null) {
-            fsmBot.setState("testing");
             chosenTest = tests.get(testName);
-            return "Вы выбрали тест номер: " + test + " - " + testName + "\n"+ chosenTest.firstQuestion();
+            return new Response(
+                    "Вы выбрали тест номер: " + test + " - " + testName + "\n" + chosenTest.firstQuestion().message,
+                    1);
         }
 
-        return unknownTestAnswer;
+        return new Response(unknownTest, 2);
     }
 
     public void reset() {
@@ -54,7 +41,7 @@ public class TestManager {
         }
     }
 
-    public String on(String input) {
+    public Response on(String input) {
         return chosenTest.nextQuestion(input);
     }
 }

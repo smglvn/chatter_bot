@@ -3,40 +3,56 @@ package com.poleena.app.bot.FSM;
 import com.google.gson.Gson;
 import com.poleena.app.bot.Models.TestManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Bot
-{
-    private FSMBot fsmBot;
-    private TestManager tester;
+public class Bot {
+    private Map<Long, FSMBot> fsmBots = new HashMap<>();
+    private String testManagerJSON;
+    private String fsmBotJSON;
+    private Gson gson;
 
     public Bot() {
-        File db = new File("src/main/newStructure.json");
-        File tests = new File("src/main/tests.json");
-        String testsString = "";
-        String dbString = "";
-        Gson gson = new Gson();
-        try {
-            dbString = new String(Files.readAllBytes(Paths.get(db.getAbsolutePath())));
-            testsString = new String(Files.readAllBytes(Paths.get(tests.getAbsolutePath())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        tester = gson.fromJson(testsString, TestManager.class);
-        fsmBot = gson.fromJson(dbString, FSMBot.class);
-    }
-
-    public void init() {
-        tester.init();
-        fsmBot.init(tester);
-        tester.setFsmBot(fsmBot);
+        fsmBotJSON = readFromJARFile("/newStructure.json");
+        testManagerJSON = readFromJARFile("/tests.json");
+        gson = new Gson();
     }
 
     public String process(String phrase) {
-        return fsmBot.process(phrase.toLowerCase());
+        return process(phrase, (long) 0);
+    }
+
+    public String process(String phrase, Long chatId) {
+        if (phrase == null) {
+            return "Не понял";
+        }
+
+        FSMBot fsmBot = fsmBots.get(chatId);
+        if (fsmBot != null) {
+            return fsmBot.process(phrase);
+        } else {
+            TestManager testManager = gson.fromJson(testManagerJSON, TestManager.class);
+            FSMBot newBot = gson.fromJson(fsmBotJSON, FSMBot.class);
+            testManager.init();
+            newBot.initStates(testManager);
+            fsmBots.put(chatId, newBot);
+
+            return newBot.process(phrase);
+        }
+    }
+
+    private String readFromJARFile(String filename) {
+        String string = "";
+        try {
+            string = new String(Files.readAllBytes(Paths.get(new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + filename)), "utf8");
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return string;
     }
 }

@@ -1,15 +1,15 @@
 package com.poleena.app.bot.Telegram;
 
 import com.poleena.app.bot.FSM.Bot;
-import com.poleena.app.bot.FSM.FSMBot;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public  class TelegramCommunicator extends TelegramLongPollingBot {
+public class TelegramCommunicator extends TelegramLongPollingBot {
     private static Bot chatbot;
     private static IBotConfig config;
 
@@ -34,7 +34,8 @@ public  class TelegramCommunicator extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            SendMessage sendMessage = new SendMessage(update.getMessage().getChatId(),chatbot.process(update.getMessage().getText()));
+            Message message = update.getMessage();
+            SendMessage sendMessage = new SendMessage(message.getChatId(), chatbot.process(message.getText(), message.getChatId()));
             execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();

@@ -11,36 +11,33 @@ class TestModel {
     private int questionIndex = 0;
     private String answerOptionsString;
 
-    private TestManager testManager;
-
     private Map<String, Integer> answersGiven = new HashMap<>();
 
-    String firstQuestion() {
+    Response firstQuestion() {
         answers.keySet().forEach(answer -> answersGiven.put(answer, 0));
         answerOptionsString = String.join("\n", answers.values());
 
-        return questions.get(++questionIndex) + "\n" + answerOptionsString;
+        return new Response(questions.get(++questionIndex) + "\n" + answerOptionsString, 1);
     }
 
-    void setTestManager(TestManager testManager) {
-        this.testManager = testManager;
-    }
-
-    String nextQuestion(String answerPhrase) {
+    Response nextQuestion(String answerPhrase) {
         if (!answers.containsKey(answerPhrase)) {
-            return "Нет такого ответа( \n" + questions.get(questionIndex) + "\n" + answerOptionsString;
+            return new Response(
+                    "Нет такого ответа( \n" + questions.get(questionIndex) + "\n" + answerOptionsString,
+                    3);
         }
 
         answersGiven.put(answerPhrase, answersGiven.get(answerPhrase) + 1);
 
         if (questionIndex == questions.size() - 1) {
-            testManager.completeTest();
             String result = calculateResult();
             resetTest();
-            return "Поздравляю, вы прошли тест. Вот ваш результат:\n" + result + "\n Пройдешь еще?";
+            return new Response(
+                    "Поздравляю, вы прошли тест. Вот ваш результат:\n" + result,
+                    0);
         }
 
-        return questions.get(++questionIndex) + "\n" + answerOptionsString;
+        return new Response(questions.get(++questionIndex) + "\n" + answerOptionsString, 1);
     }
 
     void resetTest() {
@@ -51,8 +48,7 @@ class TestModel {
     private String calculateResult() {
         String result = "";
         int maxCount = -1;
-        for (String key : answersGiven.keySet())
-        {
+        for (String key : answersGiven.keySet()) {
             int count = answersGiven.get(key);
             if (count > maxCount) {
                 result = results.get(key);

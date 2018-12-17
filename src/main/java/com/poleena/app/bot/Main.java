@@ -11,8 +11,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import com.poleena.app.bot.FSM.Bot;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
+//import java.net.Authenticator;
+//import java.net.PasswordAuthentication;
 import java.util.Scanner;
 
 public class Main {
@@ -41,7 +41,6 @@ public class Main {
         System.out.println("type something");
 
         try {
-            bot.init();
             BotConfig cf = new BotConfig();
             TelegramCommunicator tg = new TelegramCommunicator(botOptions, bot , cf);
             botsApi.registerBot(tg);

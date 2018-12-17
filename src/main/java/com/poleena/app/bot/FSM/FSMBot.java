@@ -4,23 +4,25 @@ import com.poleena.app.bot.Models.TestManager;
 
 import java.util.Map;
 
-public class FSMBot {
-
+class FSMBot {
     private String currentState;
     private Map<String, State> states;
     private String help;
-    TestManager testManager;
 
-    public String process(String phrase) {
-        return phrase.equals("help") ? help : states.get(currentState).on(phrase);
+    String process(String phrase) {
+        Transition transition = states.get(currentState).on(phrase);
+        setState(transition.nextState);
+
+        return phrase.equals("help") ? help : transition.getTransitionMessage();
     }
 
-    public void setState(String state) {
-        currentState = state;
+    private void setState(String state) {
+        if (state != null) {
+            currentState = state;
+        }
     }
 
-    void init(TestManager tester) {
-        this.testManager = tester;
-        states.values().forEach((state) -> state.init(this));
+    void initStates(TestManager testManager) {
+        states.values().forEach((state) -> state.init(testManager));
     }
 }

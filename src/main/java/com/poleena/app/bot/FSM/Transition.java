@@ -4,20 +4,18 @@ import java.util.concurrent.ThreadLocalRandom;
 
 class Transition {
     private String[] messages;
-    private boolean tests = false;
-    private String nextState;
-    private FSMBot fsm;
+    String nextState;
 
-    void init(FSMBot fsm) {
-        this.fsm = fsm;
+    Transition(String message, String nextState) {
+        this.messages = new String[]{message};
+        this.nextState = nextState;
     }
 
-    String on(){
-        fsm.setState(nextState);
-        if (tests) {
-            return fsm.testManager.testsString;
-        }
+    Transition(String message) {
+        this.messages = new String[]{message};
+    }
 
+    String getTransitionMessage(){
         return messages[ThreadLocalRandom.current().nextInt(messages.length)];
     }
 }

@@ -1,5 +1,6 @@
 package com.poleena.app.bot.FSM;
 
+import com.poleena.app.bot.Models.Response;
 import com.poleena.app.bot.Models.TestManager;
 
 import java.util.HashMap;
@@ -13,44 +14,56 @@ class State {
 
     private Map<String, String> symbols = new HashMap<>();
     private TestManager testManager;
-    private FSMBot fsm;
 
 
-    String on(String phrase) {
+    Transition on(String phrase) {
         String symbol = symbols.get(phrase);
 
         if (phrase.equals("тест")) {
-            fsm.setState("choosing");
             testManager.reset();
-            return testManager.testsString;
+            return new Transition("Выберите цифру понравившегося теста\n" + testManager.testsList, "choosing");
         }
 
         if (symbol != null) {
-            return transitions.get(symbol).on();
+            return transitions.get(symbol);
         }
 
         if (testing) {
-            return testManager.on(phrase);
+            Response response = testManager.on(phrase);
+            Transition transition;
+
+            if (response.status == 0) {
+                transition = new Transition(response.message + "\nПройдешь еще?\n" + testManager.testsList, "choosing");
+            } else {
+                transition = new Transition(response.message);
+            }
+
+            return transition;
         }
 
         if (testChoosing) {
-            return testManager.chooseTest(phrase);
+            Response response = testManager.chooseTest(phrase);
+            Transition transition;
+
+            if (response.status == 1) {
+                transition = new Transition(response.message, "testing");
+            } else {
+                transition = new Transition(response.message);
+            }
+            return transition;
         }
 
-        return transitions.get("*").on();
+        return transitions.get("*");
     }
 
-    void init(FSMBot fsm) {
+    void init(TestManager testManager) {
         symbolsMap.keySet().forEach((symbol) -> {
             for (String phrase : symbolsMap.get(symbol)) {
                 symbols.put(phrase, symbol);
             }
         });
 
-        transitions.values().forEach(transition -> transition.init(fsm));
-
-        testManager = fsm.testManager;
-        this.fsm = fsm;
+        this.testManager = testManager;
     }
 
 }

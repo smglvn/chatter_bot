@@ -35,18 +35,11 @@
     },
     "accepting": {
       "symbolsMap": {
-        "accept": [
-          "да"
-        ],
         "decline": [
           "нет"
         ]
       },
       "transitions": {
-        "accept": {
-          "tests": true,
-          "nextState": "choosing"
-        },
         "decline": {
           "messages": [
             "Ну тогда пока, возвращайся скорее!"
@@ -55,7 +48,7 @@
         },
         "*": {
           "messages": [
-            "Выбери либо 'да', либо 'нет'"
+            "Выбери либо 'тест', либо 'нет'"
           ],
           "nextState": "accepting"
         }
@@ -63,8 +56,16 @@
     },
     "choosing": {
       "testChoosing": true,
-      "symbolsMap": {},
+      "symbolsMap": {
+        "decline": [
+          "нет"
+        ]
+      },
       "transitions": {
+        "decline": {
+          "messages": ["Ну ладно, пока"],
+          "nextState": "init"
+        },
         "*": {
           "messages": [
             "Приступаем к тесту"
