@@ -23,6 +23,7 @@ public class ProxyConfig implements IProxyConfig{
     public Integer getProxyPort() {
         return PROXY_PORT;
     }
+
     @Override
     public String getProxyUser() {
         return PROXY_USER;

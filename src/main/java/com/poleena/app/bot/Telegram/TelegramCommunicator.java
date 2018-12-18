@@ -35,19 +35,8 @@ public class TelegramCommunicator extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             Message message = update.getMessage();
-            SendMessage sendMessage = new SendMessage(message.getChatId(), chatbot.process(message.getText(), message.getChatId()));
+            SendMessage sendMessage = new SendMessage(message.getChatId(), chatbot.process(message.getText().toLowerCase(), message.getChatId()));
             execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void SendMessage(int id, String text) {
-        try {
-            SendMessage sendMessage = new SendMessage(Integer.toString(id), text);
-            sendMessage.setReplyMarkup(new ReplyKeyboardRemove());
-            execute(sendMessage);
-
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
